@@ -44,4 +44,13 @@ class OrderServiceImplTest {
                 .hasMessageContaining(MENU_QUANTITY_LIMIT.getMessage());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"햄버거(1개)",
+            "피자(1개),콜라(1개)"})
+    void 메뉴_최소가격제한_예외테스트(String testInput) {
+        assertThatThrownBy(() -> orderService.registerOrder(testInput))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[ERROR]: ")
+                .hasMessageContaining(MINIMUM_PRICE_EXCEPTION.getMessage());
+    }
 }

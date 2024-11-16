@@ -16,6 +16,7 @@ public class OrderResponse {
     public static OrderResponse from(EnumMap<Menu, Integer> orderList) {
         validateOrderQuantity(orderList);
         validateMinimumOrderPrice(orderList);
+        validateOnlyDrink(orderList);
         return new OrderResponse(orderList);
     }
 
@@ -32,6 +33,12 @@ public class OrderResponse {
     private static void validateOrderQuantity(EnumMap<Menu, Integer> orderList) {
         if(orderList.entrySet().stream().anyMatch(entry -> entry.getValue() > 10)) {
             throw new CustomException(MENU_QUANTITY_LIMIT.getMessage());
+        }
+    }
+
+    private static void validateOnlyDrink(EnumMap<Menu, Integer> orderList) {
+        if(orderList.entrySet().stream().allMatch(entry -> entry.getKey().getMenuType() == MenuType.DRINK)) {
+            throw new CustomException(ONLY_DRINK_EXCEPTION.getMessage());
         }
     }
 }

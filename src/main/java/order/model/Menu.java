@@ -36,6 +36,10 @@ public enum Menu {
                 .orElseThrow(() -> new CustomException(WRONG_MENU_NAME.getMessage()));
     }
 
+    public MenuType getMenuType() {
+        return menuType;
+    }
+
     public int getPrice() {
         return price;
     }
