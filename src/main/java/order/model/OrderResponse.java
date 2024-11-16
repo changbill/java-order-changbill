@@ -5,6 +5,8 @@ import order.exception.CustomException;
 import java.util.EnumMap;
 
 import static order.exception.ExceptionMessage.*;
+import static order.model.NumbersConstant.MAXIMUM_ORDER_QUANTITY;
+import static order.model.NumbersConstant.MINIMUM_ORDER_PRICE;
 
 public class OrderResponse {
     private final EnumMap<Menu, Integer> orderList;
@@ -22,16 +24,21 @@ public class OrderResponse {
 
     private static void validateMinimumOrderPrice(EnumMap<Menu, Integer> orderList) {
         int orderPrice = orderList.entrySet().stream()
-                .mapToInt(entry -> entry.getKey().getPrice() * entry.getValue())
+                .mapToInt(entry -> {
+                    int price = entry.getKey().getPrice();
+                    Integer value = entry.getValue();
+
+                    return price * value;
+                })
                 .sum();
 
-        if(orderPrice < 30_000) {
+        if(orderPrice < MINIMUM_ORDER_PRICE) {
             throw new CustomException(MINIMUM_PRICE_EXCEPTION.getMessage());
         }
     }
 
     private static void validateOrderQuantity(EnumMap<Menu, Integer> orderList) {
-        if(orderList.entrySet().stream().anyMatch(entry -> entry.getValue() > 10)) {
+        if(orderList.entrySet().stream().anyMatch(entry -> entry.getValue() > MAXIMUM_ORDER_QUANTITY)) {
             throw new CustomException(MENU_QUANTITY_LIMIT.getMessage());
         }
     }

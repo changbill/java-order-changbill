@@ -12,17 +12,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class OrderParser {
+    private static final String ORDER_REGEX = "([가-힣\\s]+)\\(([0-9]+)개\\)";
+
     public OrderResponse parseOrder(String orderInput) {
         List<String> splitOrders =
                 Arrays.stream(orderInput.split(","))
                         .map(String::trim)
                         .toList();
 
+        return OrderResponse.from(getOrderList(splitOrders));
+    }
+
+    private static EnumMap<Menu, Integer> getOrderList(List<String> splitOrders) {
         EnumMap<Menu, Integer> orderList = new EnumMap<>(Menu.class);
-        Pattern pattern = Pattern.compile("([가-힣\\s]+)\\(([0-9]+)개\\)");
 
         splitOrders.forEach(splitOrder -> {
-            Matcher matcher = pattern.matcher(splitOrder);
+            Matcher matcher = Pattern.compile(ORDER_REGEX).matcher(splitOrder);
             if(matcher.matches()) {
                 String menuName = matcher.group(1);
                 int quantity = Integer.parseInt(matcher.group(2));
@@ -32,6 +37,6 @@ public class OrderParser {
             }
         });
 
-        return OrderResponse.from(orderList);
+        return orderList;
     }
 }
