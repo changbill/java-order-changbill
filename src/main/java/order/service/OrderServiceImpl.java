@@ -1,5 +1,6 @@
 package order.service;
 
+import order.model.Order;
 import order.model.OrderResponse;
 
 public class OrderServiceImpl implements OrderService {
@@ -10,6 +11,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public OrderResponse registerOrder(String orderInput) {
-        return orderParser.parseOrder(orderInput);
+        Order order = orderParser.parseOrder(orderInput);
+        return OrderResponse.from(order);
     }
 }

@@ -3,7 +3,7 @@ package order.service;
 import order.exception.CustomException;
 import order.exception.ExceptionMessage;
 import order.model.Menu;
-import order.model.OrderResponse;
+import order.model.Order;
 
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -14,13 +14,13 @@ import java.util.regex.Pattern;
 public class OrderParser {
     private static final String ORDER_REGEX = "([가-힣\\s]+)\\(([0-9]+)개\\)";
 
-    public OrderResponse parseOrder(String orderInput) {
+    public Order parseOrder(String orderInput) {
         List<String> splitOrders =
                 Arrays.stream(orderInput.split(","))
                         .map(String::trim)
                         .toList();
 
-        return OrderResponse.from(getOrderList(splitOrders));
+        return Order.from(getOrderList(splitOrders));
     }
 
     private static EnumMap<Menu, Integer> getOrderList(List<String> splitOrders) {

@@ -1,51 +1,69 @@
 package order.model;
 
-import order.exception.CustomException;
-
 import java.util.EnumMap;
-
-import static order.exception.ExceptionMessage.*;
-import static order.model.NumbersConstant.MAXIMUM_ORDER_QUANTITY;
-import static order.model.NumbersConstant.MINIMUM_ORDER_PRICE;
+import java.util.Map;
 
 public class OrderResponse {
     private final EnumMap<Menu, Integer> orderList;
+    private final int deliveryFee;
+    private final int serviceMandu;
+    private final int totalOrderPrice;
 
-    private OrderResponse(EnumMap<Menu, Integer> orderList) {
-        this.orderList = orderList;
+    private OrderResponse(Order order) {
+        this.orderList = order.getOrderList();
+        this.deliveryFee = order.getDeliveryFee();
+        this.serviceMandu = order.getServiceMandu();
+        this.totalOrderPrice = order.getTotalOrderPrice();
     }
 
-    public static OrderResponse from(EnumMap<Menu, Integer> orderList) {
-        validateOrderQuantity(orderList);
-        validateMinimumOrderPrice(orderList);
-        validateOnlyDrink(orderList);
-        return new OrderResponse(orderList);
+    public static OrderResponse from(Order order) {
+        return new OrderResponse(order);
     }
 
-    private static void validateMinimumOrderPrice(EnumMap<Menu, Integer> orderList) {
-        int orderPrice = orderList.entrySet().stream()
-                .mapToInt(entry -> {
-                    int price = entry.getKey().getPrice();
-                    Integer value = entry.getValue();
+    public String toPrettyString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        orderDetailsToString(stringBuilder);
+        totalOrderPriceToString(stringBuilder);
+        serviceManduToString(stringBuilder);
+        finalPaymentAmount(stringBuilder);
 
-                    return price * value;
-                })
-                .sum();
+        return stringBuilder.toString();
+    }
 
-        if(orderPrice < MINIMUM_ORDER_PRICE) {
-            throw new CustomException(MINIMUM_PRICE_EXCEPTION.getMessage());
+    private void finalPaymentAmount(StringBuilder stringBuilder) {
+        stringBuilder.append(
+                "[최종 결제 금액]" + "\n"
+                + String.format("%,d", totalOrderPrice + deliveryFee) + "원"
+        );
+    }
+
+    private void serviceManduToString(StringBuilder stringBuilder) {
+        if(serviceMandu > 0) {
+            stringBuilder.append(
+                    "[서비스]" + "\n"
+                    + "서비스 만두(" + serviceMandu + "개)" + "\n"
+                    + "\n"
+            );
         }
     }
 
-    private static void validateOrderQuantity(EnumMap<Menu, Integer> orderList) {
-        if(orderList.entrySet().stream().anyMatch(entry -> entry.getValue() > MAXIMUM_ORDER_QUANTITY)) {
-            throw new CustomException(MENU_QUANTITY_LIMIT.getMessage());
-        }
+    private void totalOrderPriceToString(StringBuilder stringBuilder) {
+        stringBuilder.append(
+                "총 주문 금액: " + String.format("%,d",totalOrderPrice) + "원" + "\n"
+                + "배달비: " + String.format("%,d", deliveryFee) + "원" + "\n"
+                + "\n");
     }
 
-    private static void validateOnlyDrink(EnumMap<Menu, Integer> orderList) {
-        if(orderList.entrySet().stream().allMatch(entry -> entry.getKey().getMenuType() == MenuType.DRINK)) {
-            throw new CustomException(ONLY_DRINK_EXCEPTION.getMessage());
+    private void orderDetailsToString(StringBuilder stringBuilder) {
+        stringBuilder.append("[주문 내역]" + "\n");
+        for (Map.Entry<Menu, Integer> order : orderList.entrySet()) {
+            Menu menu = order.getKey();
+            Integer quantity = order.getValue();
+            stringBuilder.append(
+                    menu.getMenuName()
+                            + "(" + quantity + "개): "
+                            + String.format("%,d", menu.getPrice() * quantity) + "원" + "\n"
+            );
         }
     }
 }
