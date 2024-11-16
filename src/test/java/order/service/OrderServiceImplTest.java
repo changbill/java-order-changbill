@@ -34,4 +34,14 @@ class OrderServiceImplTest {
                 .hasMessageContaining(WRONG_MENU_NAME.getMessage());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"햄버거(11개), 샐러드(100개), 콜라(3개)",
+            "햄버거(100개), 샐러드(2개), 콜라(3개)"})
+    void 메뉴_주문개수제한_예외테스트(String testInput) {
+        assertThatThrownBy(() -> orderService.registerOrder(testInput))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("[ERROR]: ")
+                .hasMessageContaining(MENU_QUANTITY_LIMIT.getMessage());
+    }
+
 }

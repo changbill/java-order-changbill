@@ -4,7 +4,7 @@ import order.exception.CustomException;
 
 import java.util.EnumMap;
 
-import static order.exception.ExceptionMessage.MINIMUM_PRICE_EXCEPTION;
+import static order.exception.ExceptionMessage.*;
 
 public class OrderResponse {
     private final EnumMap<Menu, Integer> orderList;
@@ -14,6 +14,7 @@ public class OrderResponse {
     }
 
     public static OrderResponse from(EnumMap<Menu, Integer> orderList) {
+        validateOrderQuantity(orderList);
         validateMinimumOrderPrice(orderList);
         return new OrderResponse(orderList);
     }
@@ -25,6 +26,12 @@ public class OrderResponse {
 
         if(orderPrice < 30_000) {
             throw new CustomException(MINIMUM_PRICE_EXCEPTION.getMessage());
+        }
+    }
+
+    private static void validateOrderQuantity(EnumMap<Menu, Integer> orderList) {
+        if(orderList.entrySet().stream().anyMatch(entry -> entry.getValue() > 10)) {
+            throw new CustomException(MENU_QUANTITY_LIMIT.getMessage());
         }
     }
 }
