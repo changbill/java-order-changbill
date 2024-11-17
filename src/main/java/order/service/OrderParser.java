@@ -8,8 +8,10 @@ import order.model.Order;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class OrderParser {
     private static final String ORDER_REGEX = "([가-힣\\s]+)\\(([0-9]+)개\\)";
@@ -24,19 +26,24 @@ public class OrderParser {
     }
 
     private static EnumMap<Menu, Integer> getOrderList(List<String> splitOrders) {
-        EnumMap<Menu, Integer> orderList = new EnumMap<>(Menu.class);
+        return splitOrders.stream()
+                .map(OrderParser::parseOrderItem)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        Integer::sum, // 중복된 메뉴 이름의 수량을 합산
+                        () -> new EnumMap<>(Menu.class)
+                ));
+    }
 
-        splitOrders.forEach(splitOrder -> {
-            Matcher matcher = Pattern.compile(ORDER_REGEX).matcher(splitOrder);
-            if(matcher.matches()) {
-                String menuName = matcher.group(1);
-                int quantity = Integer.parseInt(matcher.group(2));
-                orderList.put(Menu.parseToMenu(menuName), quantity);
-            } else if(!matcher.matches()){
-                throw new CustomException(ExceptionMessage.WRONG_MENU_NAME.getMessage());
-            }
-        });
+    private static Map.Entry<Menu, Integer> parseOrderItem(String splitOrder) {
+        Matcher matcher = Pattern.compile(ORDER_REGEX).matcher(splitOrder);
+        if (!matcher.matches()) {
+            throw new CustomException(ExceptionMessage.WRONG_MENU_NAME.getMessage());
+        }
 
-        return orderList;
+        String menuName = matcher.group(1);
+        int quantity = Integer.parseInt(matcher.group(2));
+        return Map.entry(Menu.parseToMenu(menuName), quantity);
     }
 }

@@ -35,20 +35,11 @@ public class Order {
     }
 
     public int getServiceMandu() {
-        int result = 0;
-        for(Map.Entry<Menu, Integer> order : orderList.entrySet()) {
-            if(order.getKey().getMenuType().equals(MenuType.MAIN)) {
-                result += order.getValue();
-            }
-        }
-
-        return result;
+        return sumByMenuType(orderList, MenuType.MAIN);
     }
 
     public int getTotalOrderPrice() {
-        return orderList.entrySet().stream()
-                .mapToInt(order -> order.getKey().getPrice() * order.getValue())
-                .sum();
+        return calculateOrderPrice(orderList);
     }
 
     public EnumMap<Menu, Integer> getOrderList() {
@@ -56,14 +47,7 @@ public class Order {
     }
 
     private static void validateMinimumOrderPrice(EnumMap<Menu, Integer> orderList) {
-        int orderPrice = orderList.entrySet().stream()
-                .mapToInt(entry -> {
-                    int price = entry.getKey().getPrice();
-                    Integer value = entry.getValue();
-
-                    return price * value;
-                })
-                .sum();
+        int orderPrice = calculateOrderPrice(orderList);
 
         if(orderPrice < MINIMUM_ORDER_PRICE) {
             throw new CustomException(MINIMUM_PRICE_EXCEPTION.getMessage());
@@ -77,8 +61,27 @@ public class Order {
     }
 
     private static void validateOnlyDrink(EnumMap<Menu, Integer> orderList) {
-        if(orderList.entrySet().stream().allMatch(entry -> entry.getKey().getMenuType() == MenuType.DRINK)) {
+        if(orderList.entrySet().stream()
+                .allMatch(entry -> entry.getKey().getMenuType() == MenuType.DRINK)) {
             throw new CustomException(ONLY_DRINK_EXCEPTION.getMessage());
         }
+    }
+
+    private int sumByMenuType(EnumMap<Menu, Integer> orderList, MenuType menuType) {
+        return orderList.entrySet().stream()
+                .filter(order -> order.getKey().getMenuType() == menuType)
+                .mapToInt(Map.Entry::getValue)
+                .sum();
+    }
+
+    private static int calculateOrderPrice(EnumMap<Menu, Integer> orderList) {
+        return orderList.entrySet().stream()
+                .mapToInt(entry -> {
+                    int price = entry.getKey().getPrice();
+                    Integer quantity = entry.getValue();
+
+                    return price * quantity;
+                })
+                .sum();
     }
 }
