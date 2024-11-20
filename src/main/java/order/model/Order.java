@@ -42,7 +42,7 @@ public class Order {
     }
 
     public EnumMap<Menu, Integer> getOrderList() {
-        return orderList;
+        return new EnumMap<>(orderList);
     }
 
     private static void validateMinimumOrderPrice(EnumMap<Menu, Integer> orderList) {
