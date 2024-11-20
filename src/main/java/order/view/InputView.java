@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import static order.view.ViewConstant.ORDER_INPUT_GUIDE;
+import static order.constant.ViewConstant.ORDER_INPUT_GUIDE;
 
 public class InputView {
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));

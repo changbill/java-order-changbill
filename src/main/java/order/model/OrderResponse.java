@@ -3,7 +3,7 @@ package order.model;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static order.view.ViewConstant.*;
+import static order.constant.ViewConstant.*;
 
 public class OrderResponse {
     private final EnumMap<Menu, Integer> orderList;
@@ -43,7 +43,7 @@ public class OrderResponse {
         if(serviceManduQuantity > 0) {
             stringBuilder.append(
                     SERVICE_HEADER + "\n"
-                    + "서비스 만두(" + serviceManduQuantity + "개)" + "\n"
+                    + "서비스 만두" + "(" + serviceManduQuantity + "개" + ")" + "\n"
                     + "\n"
             );
         }
@@ -63,7 +63,7 @@ public class OrderResponse {
             Integer quantity = order.getValue();
             stringBuilder.append(
                     menu.getMenuName()
-                            + "(" + quantity + "개): "
+                            + "(" + quantity + "개" + ")" + ": "
                             + getThousandCommaFormat(menu.getPrice() * quantity) + "원" + "\n"
             );
         }

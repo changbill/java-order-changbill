@@ -6,8 +6,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import static order.exception.ExceptionMessage.*;
-import static order.model.NumbersConstant.MAXIMUM_ORDER_QUANTITY;
-import static order.model.NumbersConstant.MINIMUM_ORDER_PRICE;
+import static order.constant.OrderConstant.*;
 
 public class Order {
     private final EnumMap<Menu, Integer> orderList;
@@ -17,7 +16,7 @@ public class Order {
     }
 
     public static Order from(EnumMap<Menu, Integer> orderList) {
-        validateOrderQuantity(orderList);
+        validateQuantity(orderList);
         validateMinimumOrderPrice(orderList);
         validateOnlyDrink(orderList);
         return new Order(orderList);
@@ -25,17 +24,17 @@ public class Order {
 
     public int getDeliveryFee() {
         int totalOrderPrice = getTotalOrderPrice();
-        if(totalOrderPrice < 50_000) {
-            return 2_000;
-        } else if (totalOrderPrice < 100_000) {
-            return 1_000;
+        if(totalOrderPrice < FIRST_TIER_STANDARD) {
+            return FIRST_TIER_DELIVERY_FEE;
+        } else if (totalOrderPrice < SECOND_TIER_STANDARD) {
+            return SECOND_TIER_DELIVERY_FEE;
         }
 
-        return 0;
+        return THIRD_TIER_DELIVERY_FEE;
     }
 
     public int getServiceMandu() {
-        return sumByMenuType(orderList, MenuType.MAIN);
+        return sumQuantityByMenuType(orderList, MenuType.MAIN);
     }
 
     public int getTotalOrderPrice() {
@@ -54,7 +53,7 @@ public class Order {
         }
     }
 
-    private static void validateOrderQuantity(EnumMap<Menu, Integer> orderList) {
+    private static void validateQuantity(EnumMap<Menu, Integer> orderList) {
         if(orderList.entrySet().stream().anyMatch(entry -> entry.getValue() > MAXIMUM_ORDER_QUANTITY)) {
             throw new CustomException(MENU_QUANTITY_LIMIT.getMessage());
         }
@@ -67,7 +66,7 @@ public class Order {
         }
     }
 
-    private int sumByMenuType(EnumMap<Menu, Integer> orderList, MenuType menuType) {
+    private int sumQuantityByMenuType(EnumMap<Menu, Integer> orderList, MenuType menuType) {
         return orderList.entrySet().stream()
                 .filter(order -> order.getKey().getMenuType() == menuType)
                 .mapToInt(Map.Entry::getValue)
@@ -78,7 +77,7 @@ public class Order {
         return orderList.entrySet().stream()
                 .mapToInt(entry -> {
                     int price = entry.getKey().getPrice();
-                    Integer quantity = entry.getValue();
+                    int quantity = entry.getValue();
 
                     return price * quantity;
                 })

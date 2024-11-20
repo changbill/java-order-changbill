@@ -29,7 +29,7 @@ public enum Menu {
         this.price = price;
     }
 
-    public static Menu parseToMenu(String menuName) {
+    public static Menu ofMenuName(String menuName) {
         return Arrays.stream(Menu.values())
                 .filter(menu -> menu.menuName.equals(menuName))
                 .findFirst()

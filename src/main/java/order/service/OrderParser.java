@@ -13,12 +13,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static order.constant.ViewConstant.ORDER_INPUT_DELIMITER;
+
 public class OrderParser {
-    private static final String ORDER_REGEX = "([가-힣\\s]+)\\(([0-9]+)개\\)";
+    private static final String ORDER_REGEX = "([가-힣\\s]+)\\(([0-9]+)개\\)";     // 예: 오렌지 주스(5개)
 
     public Order parseOrder(String orderInput) {
         List<String> splitOrders =
-                Arrays.stream(orderInput.split(","))
+                Arrays.stream(orderInput.split(ORDER_INPUT_DELIMITER))
                         .map(String::trim)
                         .toList();
 
@@ -44,6 +46,6 @@ public class OrderParser {
 
         String menuName = matcher.group(1);
         int quantity = Integer.parseInt(matcher.group(2));
-        return Map.entry(Menu.parseToMenu(menuName), quantity);
+        return Map.entry(Menu.ofMenuName(menuName), quantity);
     }
 }
