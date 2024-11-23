@@ -1,5 +1,4 @@
 import order.controller.OrderController;
-import order.service.OrderParser;
 import order.service.OrderServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ public class ApplicationTest {
 
     @BeforeEach
     void setUp() {
-        orderController = new OrderController(new OrderServiceImpl(new OrderParser()));
+        orderController = new OrderController(new OrderServiceImpl());
     }
 
     @ParameterizedTest

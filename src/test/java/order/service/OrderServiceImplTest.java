@@ -13,7 +13,7 @@ class OrderServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        orderService = new OrderServiceImpl(new OrderParser());
+        orderService = new OrderServiceImpl();
     }
 
     @ParameterizedTest

@@ -2,7 +2,6 @@ package order;
 
 import order.controller.OrderController;
 import order.model.OrderResponse;
-import order.service.OrderParser;
 import order.service.OrderServiceImpl;
 import order.view.InputView;
 import order.view.OutputView;
@@ -17,7 +16,7 @@ public class OrderSystem {
     public OrderSystem() {
         inputView = new InputView();
         outputView = new OutputView();
-        orderController = new OrderController(new OrderServiceImpl(new OrderParser()));
+        orderController = new OrderController(new OrderServiceImpl());
     }
 
     public void run() throws IOException {
